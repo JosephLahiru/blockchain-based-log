@@ -20,6 +20,8 @@ def write():
     try:
         log_content = request.json['log_content']
 
+        print(log_content)
+
     except Exception as _e:
         return add_headers({'error': str(_e)})
 
