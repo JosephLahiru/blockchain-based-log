@@ -40,6 +40,20 @@ def validate():
         return jsonify({'error': str(_e)}), 400
 
 
+@app.route('/view_blockchain', methods=['GET'])
+def view_blockchain():
+    chain_data = []
+    for block in blockchain.chain:
+        chain_data.append({
+            'index': block.index,
+            'previous_hash': block.previous_hash,
+            'timestamp': block.timestamp,
+            'data': block.data,
+            'hash': block.hash
+        })
+    return jsonify({'length': len(chain_data), 'chain': chain_data}), 200
+
+
 if __name__ == '__main__':
     from waitress import serve
     serve(app, host='0.0.0.0', port=5000, threads=5)
