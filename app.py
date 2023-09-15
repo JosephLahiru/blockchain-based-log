@@ -29,6 +29,17 @@ def write():
         return add_headers({'error': str(_e)})
 
 
+@app.route('/validate', methods=['GET'])
+def validate():
+    try:
+        if blockchain.is_chain_valid():
+            return jsonify({'message': 'The blockchain is valid.'}), 200
+        else:
+            return jsonify({'error': 'The blockchain is not valid.'}), 400
+    except Exception as _e:
+        return jsonify({'error': str(_e)}), 400
+
+
 if __name__ == '__main__':
     from waitress import serve
     serve(app, host='0.0.0.0', port=5000, threads=5)
