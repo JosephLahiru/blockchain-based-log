@@ -1,4 +1,7 @@
 from flask import Flask, request, jsonify, make_response, render_template
+from block import Blockchain
+
+blockchain = Blockchain()
 
 app = Flask(__name__)
 
@@ -19,8 +22,8 @@ def index():
 def write():
     try:
         log_content = request.json['log_content']
-
         print(log_content)
+        blockchain.add_block(log_content)
 
     except Exception as _e:
         return add_headers({'error': str(_e)})
