@@ -1,4 +1,7 @@
 from flask import Flask, request, jsonify, make_response, render_template
+from block import Blockchain
+
+blockchain = Blockchain()
 
 app = Flask(__name__)
 
@@ -19,11 +22,36 @@ def index():
 def write():
     try:
         log_content = request.json['log_content']
-
         print(log_content)
+        blockchain.add_block(log_content)
 
     except Exception as _e:
         return add_headers({'error': str(_e)})
+
+
+@app.route('/validate', methods=['GET'])
+def validate():
+    try:
+        if blockchain.is_chain_valid():
+            return jsonify({'message': 'The blockchain is valid.'}), 200
+        else:
+            return jsonify({'error': 'The blockchain is not valid.'}), 400
+    except Exception as _e:
+        return jsonify({'error': str(_e)}), 400
+
+
+@app.route('/view_blockchain', methods=['GET'])
+def view_blockchain():
+    chain_data = []
+    for block in blockchain.chain:
+        chain_data.append({
+            'index': block.index,
+            'previous_hash': block.previous_hash,
+            'timestamp': block.timestamp,
+            'data': block.data,
+            'hash': block.hash
+        })
+    return jsonify({'length': len(chain_data), 'chain': chain_data}), 200
 
 
 if __name__ == '__main__':
