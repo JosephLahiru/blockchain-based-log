@@ -6,8 +6,8 @@ blockchain = Blockchain()
 app = Flask(__name__)
 
 
-def add_headers(output):
-    response = make_response(jsonify(output))
+def add_headers(output, status_code):
+    response = make_response(jsonify(output), status_code)
     response.headers.add('Access-Control-Allow-Origin', '*')
 
     return response
@@ -22,20 +22,19 @@ def index():
 def write():
     try:
         log_content = request.json['log_content']
-        print(log_content)
         blockchain.add_block(log_content)
-
+        return add_headers({'message': 'block added successfully.'}, 201)
     except Exception as _e:
-        return add_headers({'error': str(_e)})
+        return add_headers({'error': str(_e)}, 400)
 
 
 @app.route('/validate', methods=['GET'])
 def validate():
     try:
         if blockchain.is_chain_valid():
-            return jsonify({'message': 'The blockchain is valid.'}), 200
+            return add_headers({'message': 'The blockchain is valid.'}, 200)
         else:
-            return jsonify({'error': 'The blockchain is not valid.'}), 400
+            return add_headers({'error': 'The blockchain is not valid.'}, 400)
     except Exception as _e:
         return jsonify({'error': str(_e)}), 400
 
@@ -51,7 +50,7 @@ def view_blockchain():
             'data': block.data,
             'hash': block.hash
         })
-    return jsonify({'length': len(chain_data), 'chain': chain_data}), 200
+    return add_headers({'length': len(chain_data), 'chain': chain_data}, 200)
 
 
 if __name__ == '__main__':

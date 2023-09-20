@@ -18,9 +18,11 @@ class Blockchain:
         try:
             self.chain = self.load_blockchain()
             self.previous_block = self.chain[-1]
+            print("blockchain loaded.")
         except (FileNotFoundError, EOFError):
             self.chain = [self.create_genesis_block()]
             self.previous_block = self.chain[0]
+            print("blockchain not found.\ncreating genisis block.")
 
     def calculate_hash(self, index, previous_hash, timestamp, data):
         value = str(index) + str(previous_hash) + str(timestamp) + str(data)
